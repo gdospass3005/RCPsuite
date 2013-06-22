@@ -1,0 +1,28 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+mkdir $RCPSDATA/00_Model_Building
+mkdir $RCPSDATA/00_Model_Building/3-D
+
+DATADIR=$RCPSDATA/00_Model_Building/3-D
+
+cp hor_list.txt $DATADIR
+cp VP_list.asc  $DATADIR
+
+Nx=201
+Ny=211
+Nz=221
+fz=0.0
+dz=5.0
+nHor=5
+hList=$DATADIR/hor_list.txt
+mList=$DATADIR/VP_list.asc
+
+model=$DATADIR/VP.ad
+
+
+cd $DATADIR
+
+p_mmaker3D $Nx $Ny $Nz $fz $dz $nHor $hList $mList $model
+

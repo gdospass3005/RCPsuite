@@ -1,0 +1,31 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+INPUTDIR=$RCPSDATA/00_Model_Building/1-D
+
+mkdir $RCPSDATA/02_Seismic_Modeling
+mkdir $RCPSDATA/02_Seismic_Modeling/1-D
+DATADIR=$RCPSDATA/02_Seismic_Modeling/1-D
+
+nx=1
+ny=1
+nt=1001
+na=17
+da=2.5
+a0=0.0
+trc_VP=$INPUTDIR/VP_twt.ad
+trc_VS=$INPUTDIR/VS_twt.ad
+trc_RO=$INPUTDIR/RO_twt.ad
+trc_RPP=$DATADIR/RPP_twt.ad
+trc_RPS=$DATADIR/RPS_twt.ad
+
+
+cd $DATADIR
+
+
+p_Rpanels $nx $ny $nt $na $da $a0 \
+          $trc_VP $trc_VS $trc_RO \
+          $trc_RPP $trc_RPS
+
+

@@ -1,0 +1,28 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+mkdir $RCPSDATA/00_Model_Building
+mkdir $RCPSDATA/00_Model_Building/3-D
+
+DATADIR=$RCPSDATA/00_Model_Building/3-D
+
+Nx=201
+Ny=211
+Nz=221
+fx=0.0
+fy=0.0
+fz=0.0
+dx=50.0
+dy=50.0
+dz=5.0
+modelsu=VP.su
+
+cd $DATADIR
+
+susort <$modelsu >temp.su sy
+
+suwind <temp.su key=sy min=100 max=101 | \
+  suximage wbox=1000 d1=$dz d2=$dy cmap=hsv6 legend=1 title=$modelsu &
+
+rm temp.su

@@ -1,0 +1,5 @@
+Horiz_A.asc 0
+Horiz_B.asc 0
+Horiz_C.asc 0
+Horiz_D.asc 0
+Horiz_E.asc 1

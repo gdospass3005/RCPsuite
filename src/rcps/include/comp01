@@ -1,0 +1,7 @@
+#!/bin/sh
+
+RCPS_INC=$RCPSROOT/include
+
+cp rcps.h $RCPS_INC/rcps.h
+
+

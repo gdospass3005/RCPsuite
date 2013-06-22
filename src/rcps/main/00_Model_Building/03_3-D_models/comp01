@@ -1,0 +1,6 @@
+#!/bin/sh
+
+EXEC_DIR=$RCPSROOT/bin
+
+gcc -O2 -I$CWPROOT/include -L$CWPROOT/lib -o $EXEC_DIR/p_mmaker3D p_mmaker3D.c -lm -lcwp
+

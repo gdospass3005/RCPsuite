@@ -1,0 +1,16 @@
+sfzoeppritz >RPPtrace_test.rsf na=40 da=2.0 a0=0 \
+  vp1=3130 vs1=1550 rho1=2.43 \
+  vp2=3050 vs2=1750 rho2=2.22
+
+
+
+%  vp1=3130 vs1=1550 rho1=2.43 \
+%  vp2=3050 vs2=1750 rho2=2.22
+
+%  vp2=3130 vs2=1550 rho2=2.43 \
+%  vp1=3050 vs1=1750 rho1=2.22
+
+%  vp1=3050 vs1=1750 rho1=2.22 \
+%  vp2=3700 vs2=2150 rho2=2.50     % SS over carbonate
+
+sfgraph <RPPtrace_test.rsf | xtpen &

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+EXEC_DIR=$RCPSROOT/bin
+
+gcc -o $EXEC_DIR/p_horizon2D p_horizon2D.c -lm
+

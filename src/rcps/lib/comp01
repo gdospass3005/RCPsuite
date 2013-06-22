@@ -1,0 +1,13 @@
+#!/bin/sh
+
+RCPS_LIB=$RCPSROOT/lib
+RCPS_INC=$RCPSROOT/src/rcps/include
+
+# Static library compilation
+gcc -c -Wall -Werror -O2 -I$CWPROOT/include -I$RCPS_INC -L$CWPROOT/lib interface.c -o interface.o
+gcc -c -Wall -Werror -O2 -I$CWPROOT/include -I$RCPS_INC -L$CWPROOT/lib errormsg.c -o errormsg.o
+
+ar rcs $RCPS_LIB/librcps.a interface.o errormsg.o
+
+rm *.o
+

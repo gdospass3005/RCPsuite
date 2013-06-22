@@ -1,0 +1,34 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+mkdir $RCPSDATA/00_Model_Building
+mkdir $RCPSDATA/00_Model_Building/3-D
+
+DATADIR=$RCPSDATA/00_Model_Building/3-D
+
+Nx=201
+Ny=211
+Nz=221
+fx=0.0
+fy=0.0
+fz=0.0
+dx=50.0
+dy=50.0
+dz=5.0
+model=VP.asc
+modelsu=VP.su
+
+cd $DATADIR
+
+#a2b n1=1 <$model >temp.ad
+
+suaddhead n1=$Nz <VP.ad | \
+  sushw key=dt a=1000 | \
+  sushw key=sx a=1 c=1 j=$Ny | \
+  sushw key=sy a=1 b=1 j=$Ny >$modelsu
+
+surange <$modelsu
+
+#rm temp.ad
+

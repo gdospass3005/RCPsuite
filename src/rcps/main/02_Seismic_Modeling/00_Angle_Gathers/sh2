@@ -1,0 +1,32 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+DATADIR=$RCPSDATA/02_Seismic_Modeling/1-D
+
+suaddhead n1=1001 <$DATADIR/RPP_twt.ad | \
+  sushw key=dt a=4000 >$DATADIR/RPP_twt.su
+suwind <$DATADIR/RPP_twt.su tmin=2.5 | \
+  suxwigb title="RPP" label1="twt[s]" d2=2.5 label2="incidence angle" &
+
+suaddhead n1=1001 <$DATADIR/RPS_twt.ad | \
+  sushw key=dt a=4000 >$DATADIR/RPS_twt.su
+suwind <$DATADIR/RPS_twt.su tmin=2.5 | \
+  suxwigb title="RPS" label1="twt[s]" d2=2.5 label2="incidence angle" &
+
+suwaveform type=ricker1 fpeak=35 > $DATADIR/wavelet.su
+
+suconv <$DATADIR/RPP_twt.su sufile=$DATADIR/wavelet.su | \
+  suwind tmin=2.5 | \
+  suximage title="PP_synthetic" label1="twt[s]" d2=2.5 \
+          label2="incidence angle" &
+#  suxwigb title="PP_synthetic" label1="twt[s]" d2=2.5 \
+#          label2="incidence angle" &
+
+suconv <$DATADIR/RPS_twt.su sufile=$DATADIR/wavelet.su | \
+  suwind tmin=2.5 | \
+  suximage title="PS_synthetic" label1="twt[s]" d2=2.5 \
+          label2="incidence angle" &
+#  suxwigb title="PS_synthetic" label1="twt[s]" d2=2.5 \
+#          label2="incidence angle" &
+
+
