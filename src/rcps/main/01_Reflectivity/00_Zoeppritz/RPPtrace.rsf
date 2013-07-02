@@ -1,10 +1,10 @@
-1.5-svn	sfzoeppritz	01_PROGRAMS/01_Reflectivity/00_Zoeppritz:	gino@wl-dhcp193-91.Mines.EDU	Thu Jun 13 10:47:34 2013
+1.5-svn	sfzoeppritz	main/01_Reflectivity/00_Zoeppritz:	gino@wl-dhcp193-91.Mines.EDU	Tue Jun 25 10:31:49 2013
 
 	o1=0
 	label1="Incident Angle"
 	data_format="native_float"
 	esize=4
-	in="/var/tmp/01_PROGRAMS/01_Reflectivity/00_Zoeppritz/RPPtrace.rsf@"
+	in="/var/tmp/main/01_Reflectivity/00_Zoeppritz/RPPtrace.rsf@"
 	unit1="\^o\_"
 	d1=2
 	n1=40
