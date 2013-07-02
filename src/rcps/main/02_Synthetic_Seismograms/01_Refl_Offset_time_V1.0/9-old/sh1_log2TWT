@@ -1,0 +1,46 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+mkdir $RCPSDATA/02_Seismic_Modeling
+
+DATADIR=$RCPSDATA/02_Seismic_Modeling
+
+LOGDIR=$RCPSDATA/00_Model_Building/1-D
+
+cd $DATADIR
+
+cp $LOGDIR/*_z.* .
+
+# Conversion of <Interval VP in Z> to <RMS VP in time>
+velconv <VP_z.ad >VP_rms_t.ad \
+  intype=vintz outtype=vrmst \
+  fz=0.0  dz=0.40   nz=15001 \
+  ft=0.0  dt=0.004  nt=1001
+
+suaddhead n1=1001 <VP_rms_t.ad | sushw key=dt a=4000 > VP_rms_t.su
+suxgraph < VP_rms_t.su x2beg=0.0 title="VP_rms[m/s]" label1="t[ms]" &
+
+#style=normal 
+#suxwigb < VP_rms_t.su legend=1 title="VP_rms[m/s]" label1="t[ms]" &
+
+# Conversion of <RMS VP in time> to <Interval VP in time>
+velconv <VP_rms_t.ad >VP_t.ad \
+  intype=vrmst outtype=vintt \
+  ft=0.0  dt=0.004  nt=1001
+
+suaddhead n1=1001 <VP_t.ad | sushw key=dt a=4000 > VP_t.su
+suxgraph < VP_t.su x2beg=0.0 title="VP [m/s]" label1="t[ms]" &
+
+
+# Conversion of <RMS VP in time> to <RMS VP in Z>
+suttoz <VP_rms_t.su >VP_rms_z.su \
+  vfile=VP_t.ad \
+  fz=0.0  dz=0.40   nz=15001 \
+  ft=0.0  dt=0.004  nt=1001
+
+suxwigb < VP_rms_z.su legend=1 title="VP rms [m/s]" label1="Z[km]" &
+
+#suxgraph < VP_t.su legend=1 x2beg=0.0 title="VP [m/s]" label1="t[ms]" &
+
+
