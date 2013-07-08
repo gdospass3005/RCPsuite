@@ -56,9 +56,12 @@ int main(int argc, char *argv[])
   FILE  *trc_RPP;
   FILE  *trc_RPP;
 
-  float  Vavg;
+  float  VavgP;
+  float  VavgS;
   float  S, dS;
-  float  T, dT;
+  float  TP_0, TS_0, dT;
+  float  gamma, xc0, dxc;
+  float  xc;
 
   int    ix, iy;
   int    iz, iiz;
@@ -111,10 +114,6 @@ int main(int argc, char *argv[])
   VS = alloc1float(q.nz);
   RO = alloc1float(q.nz);
 
-  Vavg    = alloc1float(q.nz);
-  //Delta_S = alloc1float(q.nz);
-  //Delta_t = alloc1float(q.nz);
-
   TwtPP   = alloc1float(q.nz);
   TwtPS   = alloc1float(q.nz);
   ThetaPP = alloc1float(q.nz);
@@ -135,10 +134,8 @@ int main(int argc, char *argv[])
       offset = (q.offset0 + io*q.doffset);
       h = offset / 2.0;
 
-      /* 1st Z-sample initialization */
-      Vavg[0] = VP[0];
-
-      TwtPP[0]    = (2.0 * h) / Vavg[0];
+      /* 1st Z-sample */
+      TwtPP[0]    = (2.0 * h) / VP[0];
       TwtPS[0]    = TwtPP[0];
       ThetaPP[0]  = PI/2.0;
       ThetaPS[0]  = PI/2.0;
@@ -147,23 +144,33 @@ int main(int argc, char *argv[])
       RPS[0]      = 0.0;
 
       for (iz=1; iz<q.nz; iz++) {
-
         z = iz * q.dz;
-        ThetaPP[iz] = tg(h/z);
+        ThetaPP[iz] = atan(h/z); 
 
-        /* Downgoing straight ray (P-wave) */
-        S = z / cos( ThetaPP[iz] );
-        dS = q.dz / cos( ThetaPP[iz] );
-
-        T = 0.0;
+        /* Mean velocities (P and S): vertical ray */
+        TP_0 = 0.0;
+        TS_0 = 0.0;
         for (iiz=1; iiz<=iz; iiz++) {
-          T += dS / VP[iiz-1]; /* One-way time */
+          TP_0 += dz / VP[iiz-1];
+          TS_0 += dz / VS[iiz-1];
         }
+        VavgP = z / TP_0;
+        VavgS = z / TS_0;
 
-        Vavg[iz] = S / T;
-        TwtPP[iz] = 2 * T;
+        /* Assimptotic Conversion Point offset (xc0) */
+        gamma = VavgP / VavgS;
+        xc0 = offset * gamma / (1.0 + gamma);
 
+        /* Correction approximation */
+        dxc = 0.0;
+        if (z < offset) { /* Quadratic corrector */
+          dxc = (1.0 - z/offset) * (1.0 - z/offset) * (offset - xc0);
+        }
+        xc = xc0 + dxc; /* Conversion point, approximated */
 
+        //TwtPP[iz] = 2 * T;
+        //S = z / cos( ThetaPP[iz] );
+        //dS = q.dz / cos( ThetaPP[iz] );
 
 
 /*

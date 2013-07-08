@@ -7,9 +7,8 @@ typedef struct INPUTPARMS
   int      na;
   float    da;
   float    a0;
+  char     fileRefl[255];
 } inputpar;
-
-int   f_calculations(inputpar  q, interfpro r);
 /******************************************************************************/
 
 
@@ -18,57 +17,44 @@ int main(int argc, char *argv[])
   inputpar  q;
   layerpro  p;
   interfpro r;
+  float     Rpp;
+  float     Rps;
+  float     theta; /* P-wave incidence angle */
+  float     phi;   /* S-wave reflection angle */
+  float     K_degrees_to_radian = PI / 180.0;
+  FILE     *trc_out;
+  float     a0, da;
+  int       ia;
 
   fprintf(stderr,"RPP, RPS calculations\n");
-  fprintf(stderr,"\n");
 
   /* Input */
-  fprintf(stderr,"Input\n");
+  q.option     = atoi(argv[1]);
+  q.na         = atoi(argv[2]);
+  q.da         = atof(argv[3]);
+  q.a0         = atof(argv[4]);
 
-  q.option    = atoi(argv[1]);
-  q.na        = atoi(argv[2]);
-  q.da        = atof(argv[3]);
-  q.a0        = atof(argv[4]);
+  p.Vp_upper   = atof(argv[5]);
+  p.Vs_upper   = atof(argv[6]);
+  p.Ro_upper   = atof(argv[7]);
 
-  p.Vp_upper  = atof(argv[5]);
-  p.Vs_upper  = atof(argv[6]);
-  p.Ro_upper  = atof(argv[7]);
+  p.Vp_lower   = atof(argv[8]);
+  p.Vs_lower   = atof(argv[9]);
+  p.Ro_lower   = atof(argv[10]);
 
-  p.Vp_lower  = atof(argv[8]);
-  p.Vs_lower  = atof(argv[9]);
-  p.Ro_lower  = atof(argv[10]);
+  strcpy( q.fileRefl, argv[11]);
 
+  /* Properties of interface from properties of layers */
   if ( f_layers_to_interface(p, &r) == 1 ) f_error(1);
 
-  /* Calculations */
-  fprintf(stderr,"Calculations\n");
-  if ( f_calculations(q, r) == 1 ) f_error(2);
-
-  /* Output */
-  fprintf(stderr,"Output\n");
-  return(0);
-}
-
-
-/******************************************************************************/
-int f_calculations(inputpar  q, interfpro r)
-{
-  float  Rpp;
-  float  Rps;
-  float  theta; /* P-wave incidence angle */
-  float  phi;   /* S-wave reflection angle */
-  float  K_degrees_to_radian = PI / 180.0;
-  FILE  *trc_out;
-  float  a0, da;
-  int    itheta;
-
-  trc_out = fopen("output.txt","w");
+  /* Reflectivities calculations */
+  trc_out = fopen(q.fileRefl, "w");
 
   a0 = q.a0 * K_degrees_to_radian;
   da = q.da * K_degrees_to_radian;
 
-  for (itheta=0; itheta<q.na; ++itheta) {
-    theta = a0 + itheta * da;
+  for (ia=0; ia<q.na; ++ia) {
+    theta = a0 + ia * da;
 
     Rpp = f_Rpp(r, theta);
 
@@ -78,7 +64,10 @@ int f_calculations(inputpar  q, interfpro r)
     fprintf(trc_out, "%.2f %.2f %.5f %.5f\n", 
       theta/ K_degrees_to_radian, phi/ K_degrees_to_radian, Rpp, Rps);
   }
-  return (0);
+
+  fprintf(stderr,"Successful end of program.\n");
+  return(0);
 }
+
 
 

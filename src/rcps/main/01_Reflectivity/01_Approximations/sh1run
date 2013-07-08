@@ -17,6 +17,8 @@ Ro_upper=2.43
 Vp_lower=3050.0
 Vs_lower=1750.0
 Ro_lower=2.22
+fileRefl=Approx_RPP_RPS.asc
 
-p_RPP_RPS $option $na $da $a0 $Vp_upper $Vs_upper $Ro_upper $Vp_lower $Vs_lower $Ro_lower
+p_RPP_RPS $option $na $da $a0 $Vp_upper $Vs_upper $Ro_upper $Vp_lower $Vs_lower $Ro_lower $fileRefl
+
 
