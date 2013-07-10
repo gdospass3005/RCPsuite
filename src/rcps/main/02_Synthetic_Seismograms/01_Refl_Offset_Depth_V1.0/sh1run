@@ -23,11 +23,11 @@ trc_VS=$INPUTDIR/VS_z.ad
 trc_RO=$INPUTDIR/RO_z.ad
 
 # Output data
-trc_timePP=$DATADIR/timePP_z.ad
-trc_timePS=$DATADIR/timePS_z.ad
-trc_thetaPP=$DATADIR/thetaPP_z.ad
-trc_thetaPS=$DATADIR/thetaPS_z.ad
-trc_phi=$DATADIR/phi_z.ad
+trc_ThetaPP=$DATADIR/ThetaPP_z.ad
+trc_ThetaPS=$DATADIR/ThetaPS_z.ad
+trc_Phi=$DATADIR/Phi_z.ad
+trc_TwtPP=$DATADIR/TwtPP_z.ad
+trc_TwtPS=$DATADIR/TwtPS_z.ad
 trc_RPP=$DATADIR/RPP_z.ad
 trc_RPS=$DATADIR/RPS_z.ad
 
@@ -35,8 +35,8 @@ cd $DATADIR
 
 p_Roffset_z $nx $ny $nz $dz \
             $noffset $doffset $offset0 \
-            $trc_timePP $trc_timePS \
-            $trc_thetaPP $trc_thetaPS $trc_phi \
             $trc_VP $trc_VS $trc_RO \
+            $trc_ThetaPP $trc_ThetaPS $trc_Phi \
+            $trc_TwtPP $trc_TwtPS \
             $trc_RPP $trc_RPS
 

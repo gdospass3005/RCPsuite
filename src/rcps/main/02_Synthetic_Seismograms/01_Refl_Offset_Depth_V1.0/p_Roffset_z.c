@@ -41,9 +41,6 @@ int main(int argc, char *argv[])
   float  *RPP;
   float  *RPS;
 
-  float  offset, h;
-  float  theta, phi, Rpp, Rps;
-
   FILE  *trc_VP;
   FILE  *trc_VS;
   FILE  *trc_RO;
@@ -54,12 +51,15 @@ int main(int argc, char *argv[])
   FILE  *trc_ThetaPS;
   FILE  *trc_Phi;
   FILE  *trc_RPP;
-  FILE  *trc_RPP;
+  FILE  *trc_RPS;
 
-  float  VavgP;
-  float  VavgS;
-  float  S, dS;
-  float  TP_0, TS_0, dT;
+  float *VavgP;
+  float *VavgS;
+  float  offset, h;
+  float  z;
+  float  theta, phi;
+  float  S;
+  float  TP, TS;
   float  gamma, xc0, dxc;
   float  xc;
 
@@ -70,10 +70,11 @@ int main(int argc, char *argv[])
   /* Input information */
 
   /* # Control parameters */
-  q.nx           = atoi(argv[1]);
+  q.nx           = atoi(argv[1]); /* nx=ny=1 if well-log */
   q.ny           = atoi(argv[2]);
   q.nz           = atoi(argv[3]);
   q.dz           = atof(argv[4]);
+
   q.noffset      = atoi(argv[5]);
   q.doffset      = atof(argv[6]);
   q.offset0      = atof(argv[7]);
@@ -84,15 +85,15 @@ int main(int argc, char *argv[])
   strcpy( q.fileRO,     argv[10]);
 
   /* # Output data */
-  strcpy( q.fileTwtPP,   argv[11]);
-  strcpy( q.fileTwtPS,   argv[12]);
-  strcpy( q.fileThetaPP, argv[13]);
-  strcpy( q.fileThetaPS, argv[14]);
-  strcpy( q.filePhi,     argv[15]);
+  strcpy( q.fileThetaPP, argv[11]);
+  strcpy( q.fileThetaPS, argv[12]);
+  strcpy( q.filePhi,     argv[13]);
+  strcpy( q.fileTwtPP,   argv[14]);
+  strcpy( q.fileTwtPS,   argv[15]);
   strcpy( q.fileRPP,     argv[16]);
   strcpy( q.fileRPS,     argv[17]);
 
-  /* AVO Reflectivity Modeling */
+  /* AVO Reflectivity Modeling (in depth) */
   /* Obs: 'convolve' later by adding time delayed scaled wavelets to time trace */
 
   /* # Opening input files */
@@ -101,18 +102,21 @@ int main(int argc, char *argv[])
   trc_RO = fopen( q.fileRO, "rb");
 
   /* # Opening output files */
-  trc_TwtPP   = fopen( q.fileTwtPP, "wb");
-  trc_TwtPS   = fopen( q.fileTwtPS, "wb");
   trc_ThetaPP  = fopen( q.fileThetaPP, "wb");
   trc_ThetaPS  = fopen( q.fileThetaPS, "wb");
-  trc_Phi      = fopen( q.filePhi, "wb");
-  trc_RPP      = fopen( q.fileRPP, "wb");
-  trc_RPS      = fopen( q.fileRPS, "wb");
+  trc_Phi      = fopen( q.filePhi,     "wb");
+  trc_TwtPP    = fopen( q.fileTwtPP,   "wb");
+  trc_TwtPS    = fopen( q.fileTwtPS,   "wb");
+  trc_RPP      = fopen( q.fileRPP,     "wb");
+  trc_RPS      = fopen( q.fileRPS,     "wb");
 
   /* # Memory allocation for required quantities */
   VP = alloc1float(q.nz);
   VS = alloc1float(q.nz);
   RO = alloc1float(q.nz);
+
+  VavgP = alloc1float(q.nz);
+  VavgS = alloc1float(q.nz);
 
   TwtPP   = alloc1float(q.nz);
   TwtPS   = alloc1float(q.nz);
@@ -129,92 +133,122 @@ int main(int argc, char *argv[])
     fread(VS, sizeof(float), (size_t) q.nz, trc_VS);
     fread(RO, sizeof(float), (size_t) q.nz, trc_RO);
 
+    VavgP[0] = VP[0];
+    VavgS[0] = VS[0];
+
+    /* Zero-offset Average VP and VS */
+    for (iz=1; iz<q.nz; iz++) {
+      z = iz * q.dz;  /* depth */
+      TP = 0.0;
+      TS = 0.0;
+      for (iiz=1; iiz<=iz; iiz++) {
+        TP += q.dz / VP[iiz-1];
+        TS += q.dz / VS[iiz-1];
+      }
+      VavgP[iz] = z / TP;
+      VavgS[iz] = z / TS;
+    }
+
     /* # Loop over offsets */
     for (io=0;io<q.noffset;io++) {
       offset = (q.offset0 + io*q.doffset);
-      h = offset / 2.0;
+      h = offset / 2.0;  /* half-offset */
 
       /* 1st Z-sample */
-      TwtPP[0]    = (2.0 * h) / VP[0];
-      TwtPS[0]    = TwtPP[0];
       ThetaPP[0]  = PI/2.0;
       ThetaPS[0]  = PI/2.0;
       Phi[0]      = 0.0;
+      TwtPP[0]    = (2.0 * h) / VP[0];
+      TwtPS[0]    = TwtPP[0];
       RPP[0]      = 0.0;
       RPS[0]      = 0.0;
 
       for (iz=1; iz<q.nz; iz++) {
-        z = iz * q.dz;
-        ThetaPP[iz] = atan(h/z); 
+        z = iz * q.dz;  /* depth */
 
-        /* Mean velocities (P and S): vertical ray */
-        TP_0 = 0.0;
-        TS_0 = 0.0;
-        for (iiz=1; iiz<=iz; iiz++) {
-          TP_0 += dz / VP[iiz-1];
-          TS_0 += dz / VS[iiz-1];
-        }
-        VavgP = z / TP_0;
-        VavgS = z / TS_0;
+        /* Interface elastic data preparation */
+        p.Vp_upper  = VP[iz-1];
+        p.Vs_upper  = VS[iz-1];
+        p.Ro_upper  = RO[iz-1];
+        p.Vp_lower  = VP[iz];
+        p.Vs_lower  = VS[iz];
+        p.Ro_lower  = RO[iz];
+        if ( f_layers_to_interface(p, &r) == 1 ) f_error(1);
+
+        /* --------------------------------*/
+        /* P-P incidence, reflection angle */
+        /* --------------------------------*/
+        ThetaPP[iz] = atan(h/z);
+
+        /* ------------------------------------*/
+        /* P-P two-way time (TWT) calculations */
+        /* ------------------------------------*/
+        S         = z / cos( ThetaPP[iz] );
+        TP        = S / VavgP[iz];
+        TwtPP[iz] = 2 * TP;
+
+        /* -----------------*/
+        /* P-P reflectivity */
+        /* -----------------*/
+        RPP[iz] = f_Rpp(r, ThetaPP[iz]);
+
+        /* ---------------------------------------------*/
+        /* P-S incidence, reflection angle calculations */
+        /* ---------------------------------------------*/
 
         /* Assimptotic Conversion Point offset (xc0) */
-        gamma = VavgP / VavgS;
+        if (VavgS[iz] < 0.000001) VavgS[iz] = 0.000001;
+        gamma = VavgP[iz] / VavgS[iz];
         xc0 = offset * gamma / (1.0 + gamma);
 
         /* Correction approximation */
         dxc = 0.0;
-        if (z < offset) { /* Quadratic corrector */
-          dxc = (1.0 - z/offset) * (1.0 - z/offset) * (offset - xc0);
+        if (z < offset) { /* Quadratic corrector for wide angles */
+          dxc = ((1.0 - z/offset) * (1.0 - z/offset)) * (offset - xc0);
         }
         xc = xc0 + dxc; /* Conversion point, approximated */
 
-        //TwtPP[iz] = 2 * T;
-        //S = z / cos( ThetaPP[iz] );
-        //dS = q.dz / cos( ThetaPP[iz] );
+        /* Angles */
+        ThetaPS[iz] = atan(xc/z);          /* P-S incidence  angle */
+        Phi[iz]     = atan((offset-xc)/z); /* P-S reflection angle */
 
+        /* ------------------------------------*/
+        /* P-S two-way time (TWT) calculations */
+        /* ------------------------------------*/
+        S        = z / cos( ThetaPS[iz] );
+        TP       = S / VavgP[iz];
+        S        = z / cos( Phi[iz] );
+        TS       = S / VavgS[iz];
+        TwtPS[iz] = TP + TS;
 
-/*
-      buff = 0.0;
-      fwrite(&buff, sizeof(float), (size_t) 1, trc_RPP);
-      fwrite(&buff, sizeof(float), (size_t) 1, trc_RPS);
-      for (it=1;it<q.nt;it++) {
+        /* -----------------*/
+        /* P-S reflectivity */
+        /* -----------------*/
+        RPS[iz] = f_Rps(r, ThetaPP[iz], &phi);
+      }
 
-        fread(&buff, sizeof(float), (size_t) 1, trc_VP);
-        Vp = buff;
-        fread(&buff, sizeof(float), (size_t) 1, trc_VS);
-        Vs = buff;
-        fread(&buff, sizeof(float), (size_t) 1, trc_RO);
-        Ro = buff;
-
-        p.Vp_upper  = prev_Vp;
-        p.Vs_upper  = prev_Vs;
-        p.Ro_upper  = prev_Ro;
-
-        p.Vp_lower  = Vp;
-        p.Vs_lower  = Vs;
-        p.Ro_lower  = Ro;
-
-        if ( f_layers_to_interface(p, &r) == 1 ) f_error(1);
-
-        Rpp = f_Rpp(r, theta);
-        Rps = f_Rps(r, theta, &phi);
-
-        fwrite(&Rpp, sizeof(float), (size_t) 1, trc_RPP);
-        fwrite(&Rps, sizeof(float), (size_t) 1, trc_RPS);
-
-        prev_Vp = Vp;
-        prev_Vs = Vs;
-        prev_Ro = Ro;
-      } */
+      fwrite(ThetaPP, sizeof(float), (size_t) q.nz, trc_ThetaPP);
+      fwrite(ThetaPS, sizeof(float), (size_t) q.nz, trc_ThetaPS);
+      fwrite(Phi,     sizeof(float), (size_t) q.nz, trc_Phi);
+      fwrite(TwtPP,   sizeof(float), (size_t) q.nz, trc_TwtPP);
+      fwrite(TwtPS,   sizeof(float), (size_t) q.nz, trc_TwtPS);
+      fwrite(RPP,     sizeof(float), (size_t) q.nz, trc_RPP);
+      fwrite(RPS,     sizeof(float), (size_t) q.nz, trc_RPS);
     }
-
-    fclose(trc_VP);
-    fclose(trc_VS);
-    fclose(trc_RO);
   }
 
+  fclose(trc_ThetaPP);
+  fclose(trc_ThetaPS);
+  fclose(trc_Phi);
+  fclose(trc_TwtPP);
+  fclose(trc_TwtPS);
   fclose(trc_RPP);
   fclose(trc_RPS);
+
+  fclose(trc_VP);
+  fclose(trc_VS);
+  fclose(trc_RO);
+
 }
 
 
