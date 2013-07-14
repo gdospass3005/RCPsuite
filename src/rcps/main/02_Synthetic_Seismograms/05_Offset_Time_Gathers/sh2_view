@@ -1,0 +1,9 @@
+#! /bin/sh
+
+DATADIR=$RCPSROOT/data/02_Synthetic_Seismograms/1-D
+
+suaddhead n1=3001 <$DATADIR/SynthPP_t.ad     | sushw key=dt a=2000 >temp1.su
+suxwigb <temp1.su legend=1 title='P-P Seismogram [s]' &
+
+rm temp*.su
+

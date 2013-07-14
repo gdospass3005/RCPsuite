@@ -23,10 +23,10 @@ suaddhead n1=15001 <$DATADIR/TwtPS_z.ad   | sushw key=dt a=400 >temp6.su
 suximage <temp6.su cmap=hsv2 legend=1 title='P-S TWT [s]' &
 
 suaddhead n1=15001 <$DATADIR/RPP_z.ad     | sushw key=dt a=400 >temp7.su
-suximage <temp7.su cmap=hsv2 legend=1 title='P-P Reflectivity' &
+suxwigb <temp7.su legend=1 title='P-P Reflectivity' &
 
 suaddhead n1=15001 <$DATADIR/RPS_z.ad     | sushw key=dt a=400 >temp8.su
-suximage <temp8.su cmap=hsv2 legend=1 title='P-S Reflectivity' &
+suxwigb <temp8.su legend=1 title='P-S Reflectivity' &
 
 rm temp*.su
 

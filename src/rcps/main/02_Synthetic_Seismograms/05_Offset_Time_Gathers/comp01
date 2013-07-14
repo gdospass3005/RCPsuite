@@ -1,0 +1,13 @@
+#!/bin/sh
+
+EXEC_DIR=$RCPSROOT/bin
+RCPS_LIB=$RCPSROOT/lib
+RCPS_INC=$RCPSROOT/include
+
+gcc -O2 \
+    -I$CWPROOT/include -I$RCPS_INC \
+    -L$CWPROOT/lib -L$RCPS_LIB \
+    -o $EXEC_DIR/p_SynthPpPs \
+     p_SynthPpPs_hxt.c \
+    -lm -lcwp -lrcps
+
