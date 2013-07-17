@@ -21,17 +21,26 @@ trc_TwtPP=$DATADIR/TwtPP_z.ad
 trc_TwtPS=$DATADIR/TwtPS_z.ad
 trc_RPP=$DATADIR/RPP_z.ad
 trc_RPS=$DATADIR/RPS_z.ad
+trc_ThetaPP=$DATADIR/ThetaPP_z.ad
+trc_ThetaPS=$DATADIR/ThetaPS_z.ad
 
 # Output
-trc_SynthPP=$DATADIR/SynthPP_t.ad
-trc_SynthPS=$DATADIR/SynthPS_t.ad
+trc_SynthPP_t=$DATADIR/SynthPP_t.ad
+trc_SynthPS_t=$DATADIR/SynthPS_t.ad
+trc_NmoPP_t=$DATADIR/NmoPP_t.ad
+trc_NmoPS_t=$DATADIR/NmoPS_t.ad
+trc_ThetaPP_t=$DATADIR/ThetaPP_t.ad
+trc_ThetaPS_t=$DATADIR/ThetaPS_t.ad
 
 cd $DATADIR
 
 p_SynthPpPs $nx $ny $nz $dz \
             $noffset $doffset $offset0 \
             $nt $dt $fpeak \
+            $trc_ThetaPP $trc_ThetaPS \
             $trc_TwtPP $trc_TwtPS \
             $trc_RPP $trc_RPS \
-            $trc_SynthPP $trc_SynthPS
+            $trc_SynthPP_t $trc_SynthPS_t \
+            $trc_NmoPP_t $trc_NmoPS_t \
+            $trc_ThetaPP_t $trc_ThetaPS_t 
 

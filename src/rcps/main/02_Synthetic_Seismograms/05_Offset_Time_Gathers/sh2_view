@@ -5,5 +5,20 @@ DATADIR=$RCPSROOT/data/02_Synthetic_Seismograms/1-D
 suaddhead n1=3001 <$DATADIR/SynthPP_t.ad     | sushw key=dt a=2000 >temp1.su
 suxwigb <temp1.su legend=1 title='P-P Seismogram [s]' &
 
+suaddhead n1=3001 <$DATADIR/SynthPS_t.ad     | sushw key=dt a=2000 >temp2.su
+suxwigb <temp2.su legend=1 title='P-S Seismogram [s]' &
+
+suaddhead n1=3001 <$DATADIR/NmoPP_t.ad       | sushw key=dt a=2000 >temp3.su
+suximage cmap=hsv6 <temp3.su legend=1 title='NmoPP [s]' &
+
+suaddhead n1=3001 <$DATADIR/NmoPS_t.ad       | sushw key=dt a=2000 >temp4.su
+suximage cmap=hsv6 <temp4.su legend=1 title='NmoPS [s]' &
+
+suaddhead n1=3001 <$DATADIR/ThetaPP_t.ad     | sushw key=dt a=2000 >temp5.su
+suximage cmap=hsv6 <temp5.su legend=1 title='ThetaPP [s]' &
+
+suaddhead n1=3001 <$DATADIR/ThetaPS_t.ad     | sushw key=dt a=2000 >temp6.su
+suximage cmap=hsv6 <temp6.su legend=1 title='ThetaPS [s]' &
+
 rm temp*.su
 
