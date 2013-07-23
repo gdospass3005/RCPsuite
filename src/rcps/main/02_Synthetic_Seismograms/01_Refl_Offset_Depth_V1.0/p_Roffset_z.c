@@ -1,3 +1,25 @@
+/* AVO Reflectivity Modeling (in depth).
+
+   RPP from Fatti's A&R approximation
+   RPS from A&R approximation
+
+   nx, ny, nz:  # of samples in X, Y, Z directions
+   dz:          sample spacing in Z
+   noffset:     # of offsets
+   doffset:     offset spacing
+   offset0:     first offset
+   trc_VP:      input  VP model (1-, 2- or 3-D)
+   trc_VS:      input  VS model 
+   trc_RO:      input  density model 
+   trc_ThetaPP: output PP incidence/reflection angle
+   trc_ThetaPS: output PS incidence angle
+   trc_Phi:     output PS reflection angle
+   trc_TwtPP:   output PP Two-Way Time
+   trc_TwtPS:   output PS Two-Way Time
+   trc_RPP:     output PP reflectivity
+   trc_RPS:     output PS reflectivity
+*/
+
 #include "rcps.h"
 
 /******************************************************************************/
@@ -13,15 +35,18 @@ typedef struct INPUTPARMS
   char   fileVP[255];
   char   fileVS[255];
   char   fileRO[255];
-  char   fileTwtPP[255];
-  char   fileTwtPS[255];
   char   fileThetaPP[255];
   char   fileThetaPS[255];
   char   filePhi[255];
+  char   fileTwtPP[255];
+  char   fileTwtPS[255];
   char   fileRPP[255];
   char   fileRPS[255];
 } inputpar;
 /******************************************************************************/
+
+void P_Roffset_z_usage(void);
+
 
 int main(int argc, char *argv[])
 {
@@ -68,6 +93,7 @@ int main(int argc, char *argv[])
   int    io;
 
   /* Input information */
+  if (argc == 1) P_Roffset_z_usage();
 
   /* # Control parameters */
   q.nx           = atoi(argv[1]); /* nx=ny=1 if well-log */
@@ -252,4 +278,41 @@ int main(int argc, char *argv[])
 }
 
 
+void P_Roffset_z_usage(void)
+{
+  fprintf(stderr,
+    "p_Roffset_z - AVO Reflectivity Modeling (in depth).\n\n");
+  fprintf(stderr,
+    "              RPP from Fatti's A&R approximation\n");
+  fprintf(stderr,
+    "              RPS from A&R approximation\n\n");
+
+  fprintf(stderr,"Usage: \n");
+  fprintf(stderr,
+    " p_Roffset_z nx ny nz dz noffset doffset offset0 \\ \n");
+  fprintf(stderr,
+    "        trc_VP trc_VS trc_RO trc_ThetaPP trc_ThetaPS trc_Phi \\ \n");
+  fprintf(stderr,
+    "        trc_TwtPP trc_TwtPS trc_RPP trc_RPS\n\n");
+  fprintf(stderr,
+    "Where:\n");
+  fprintf(stderr," nx, ny, nz:  # of samples in X, Y, Z directions\n");
+  fprintf(stderr," dz:          sample spacing in Z\n");
+  fprintf(stderr," noffset:     # of offsets\n");
+  fprintf(stderr," doffset:     offset spacing\n");
+  fprintf(stderr," offset0:     first offset\n");
+  fprintf(stderr," trc_VP:      input  VP model (1-, 2- or 3-D)\n");
+  fprintf(stderr," trc_VS:      input  VS model \n");
+  fprintf(stderr," trc_RO:      input  density model \n");
+  fprintf(stderr," trc_ThetaPP: output PP incidence/reflection angle\n");
+  fprintf(stderr," trc_ThetaPS: output PS incidence angle\n");
+  fprintf(stderr," trc_Phi:     output PS reflection angle\n");
+  fprintf(stderr," trc_TwtPP:   output PP Two-Way Time\n");
+  fprintf(stderr," trc_TwtPS:   output PS Two-Way Time\n");
+  fprintf(stderr," trc_RPP:     output PP reflectivity\n");
+  fprintf(stderr," trc_RPS:     output PS reflectivity\n");
+  fprintf(stderr,"\n");
+
+  exit(0);
+}
 

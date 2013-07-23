@@ -1,0 +1,46 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+DATADIR=$RCPSDATA/02_Synthetic_Seismograms/1-D
+
+# Control parameters
+nx=1
+ny=1
+nz=15001
+dz=0.4
+noffset=25
+doffset=100.0
+offset0=100.0
+nt=3001
+dt=0.002
+fpeak=40.0
+
+# Input data
+trc_TwtPP=$DATADIR/TwtPP_noisy_z.ad
+trc_TwtPS=$DATADIR/TwtPS_noisy_z.ad
+trc_RPP=$DATADIR/RPP_noisy_z.ad
+trc_RPS=$DATADIR/RPS_noisy_z.ad
+trc_ThetaPP=$DATADIR/ThetaPP_noisy_z.ad
+trc_ThetaPS=$DATADIR/ThetaPS_noisy_z.ad
+
+# Output
+trc_SynthPP_t=$DATADIR/SynthPP_noisy_t.ad
+trc_SynthPS_t=$DATADIR/SynthPS_noisy_t.ad
+trc_NmoPP_t=$DATADIR/NmoPP_noisy_t.ad
+trc_NmoPS_t=$DATADIR/NmoPS_noisy_t.ad
+trc_ThetaPP_t=$DATADIR/ThetaPP_noisy_t.ad
+trc_ThetaPS_t=$DATADIR/ThetaPS_noisy_t.ad
+
+cd $DATADIR
+
+p_SynthPpPs $nx $ny $nz $dz \
+            $noffset $doffset $offset0 \
+            $nt $dt $fpeak \
+            $trc_ThetaPP $trc_ThetaPS \
+            $trc_TwtPP $trc_TwtPS \
+            $trc_RPP $trc_RPS \
+            $trc_SynthPP_t $trc_SynthPS_t \
+            $trc_NmoPP_t $trc_NmoPS_t \
+            $trc_ThetaPP_t $trc_ThetaPS_t 
+

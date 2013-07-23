@@ -1,3 +1,27 @@
+/* Synthetic seismograms for PP and PS offset-dependant reflections
+
+   RPP from Fatti's A&R approximation
+   RPS from A&R approximation
+
+   nx, ny, nz:    # of samples in X, Y, Z directions
+   dz:            sample spacing in Z
+   noffset:       # of offsets
+   doffset:       offset spacing
+   offset0:       first offset
+   trc_ThetaPP:   input PP incidence/reflection angle
+   trc_ThetaPS:   input PS incidence angle
+   trc_TwtPP:     input PP Two-Way Time
+   trc_TwtPS:     input PS Two-Way Time
+   trc_RPP:       input PP reflectivity
+   trc_RPS:       input PS reflectivity
+   trc_SynthPP_t: output PP synthetic seismogram
+   trc_SynthPS_t: output PS synthetic seismogram
+   trc_NmoPP_t:   output PP Nmo correction (to apply)
+   trc_NmoPS_t:   output PS Nmo correction (to apply)
+   trc_ThetaPP_t: output PP incidence angle
+   trc_ThetaPS_t: output PS incidence angle
+*/
+
 #include "rcps.h"
 
 /******************************************************************************/
@@ -34,8 +58,10 @@ void ztot_Nmo(float *Twt, float *Twt_zero, int nz, int nt, float dt,
                 float *Nmo);
 void ztot_Angle(float *Twt, float *Theta, int nz, int nt, float dt, 
                 float *Theta_t);
+void P_SynthPpPs_hxt_usage(void);
 
 
+/******************************************************************************/
 int main(int argc, char *argv[])
 {
   inputpar  q;
@@ -79,6 +105,7 @@ int main(int argc, char *argv[])
   int    nt_half;
 
   /* Input information */
+  if (argc == 1) P_SynthPpPs_hxt_usage();
 
   /* # Control parameters */
   q.nx           = atoi(argv[1]); /* nx=ny=1 if well-log */
@@ -254,4 +281,53 @@ void add_ricker(float *Synth, int nt, float dt, float fpeak,
   }
 }
 
+
+void P_SynthPpPs_hxt_usage(void)
+{
+  fprintf(stderr,
+    "p_SynthPpPs_hxt - Synthetic seismograms for PP and PS offset-dependant reflections.\n\n");
+  fprintf(stderr,
+    "              RPP from Fatti's A&R approximation\n");
+  fprintf(stderr,
+    "              RPS from A&R approximation\n\n");
+
+  fprintf(stderr,"Usage: \n");
+  fprintf(stderr,
+    " p_SynthPpPs nx ny nz dz noffset doffset offset0 \\ \n");
+  fprintf(stderr,
+    "            nt dt fpeak \\ \n");
+  fprintf(stderr,
+    "            trc_ThetaPP trc_ThetaPS \\ \n");
+  fprintf(stderr,
+    "            trc_TwtPP trc_TwtPS \\ \n");
+  fprintf(stderr,
+    "            trc_RPP trc_RPS \\ \n");
+  fprintf(stderr,
+    "            trc_SynthPP_t trc_SynthPS_t \\ \n");
+  fprintf(stderr,
+    "            trc_NmoPP_t trc_NmoPS_t \\ \n");
+  fprintf(stderr,
+    "            trc_ThetaPP_t trc_ThetaPS_t\n");
+  fprintf(stderr,
+    "Where:\n");
+  fprintf(stderr," nx, ny, nz:    # of samples in X, Y, Z directions\n");
+  fprintf(stderr," dz:            sample spacing in Z\n");
+  fprintf(stderr," noffset:       # of offsets\n");
+  fprintf(stderr," doffset:       offset spacing\n");
+  fprintf(stderr," offset0:       first offset\n");
+  fprintf(stderr," trc_ThetaPP:   input PP incidence/reflection angle\n");
+  fprintf(stderr," trc_ThetaPS:   input PS incidence angle\n");
+  fprintf(stderr," trc_TwtPP:     input PP Two-Way Time\n");
+  fprintf(stderr," trc_TwtPS:     input PS Two-Way Time\n");
+  fprintf(stderr," trc_RPP:       input PP reflectivity\n");
+  fprintf(stderr," trc_RPS:       input PS reflectivity\n");
+  fprintf(stderr," trc_SynthPP_t: output PP synthetic seismogram\n");
+  fprintf(stderr," trc_SynthPS_t: output PS synthetic seismogram\n");
+  fprintf(stderr," trc_NmoPP_t:   output PP Nmo correction (to apply)\n");
+  fprintf(stderr," trc_NmoPS_t:   output PS Nmo correction (to apply)\n");
+  fprintf(stderr," trc_ThetaPP_t: output PP incidence angle\n");
+  fprintf(stderr," trc_ThetaPS_t: output PS incidence angle\n");
+
+  exit(0);
+}
 

@@ -1,0 +1,57 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+DATADIR=$RCPSDATA/00_Model_Building/1-D
+
+cd $DATADIR
+
+suspike nt=15001 ntr=1 nspk=1 ix1=1 it1=7500 >spike.su
+suaddnoise <spike.su sn=16 >temp.su
+suop2 temp.su spike.su op=diff >noise.su
+
+suhistogram <noise.su min=-1.0 max=1.0 bins=400 |
+a2b n1=2 | xgraph style=normal n=400 nplot=1 title="noise histogram" &
+
+sustrip <noise.su >noise.ad
+
+farith <noise.ad op=scale scale=2000.0 >noiseVP.ad
+farith <noise.ad op=scale scale=1000.0 >noiseVS.ad
+farith <noise.ad op=scale scale=1000.0 >noiseRO.ad
+
+
+farith <VP_z.ad in2=noiseVP.ad op=add >VP_noisy_z.ad
+farith <VS_z.ad in2=noiseVS.ad op=add >VS_noisy_z.ad
+farith <RO_z.ad in2=noiseRO.ad op=add >RO_noisy_z.ad
+
+
+suaddhead n1=15001 <VP_noisy_z.ad | sushw key=dt a=400 > VP_noisy_z.su
+suaddhead n1=15001 <VS_noisy_z.ad | sushw key=dt a=400 > VS_noisy_z.su
+suaddhead n1=15001 <RO_noisy_z.ad | sushw key=dt a=400 > RO_noisy_z.su
+
+cat VP_noisy_z.su VP_z.su > VP_combine_z.su
+cat VS_noisy_z.su VS_z.su > VS_combine_z.su
+cat RO_noisy_z.su RO_z.su > RO_combine_z.su
+
+# Display
+suwind < VP_combine_z.su tmin=1.8 | \
+   suxgraph title="VP original X noisy" label1="Z[km]" legend=1 &
+suwind < VS_combine_z.su tmin=1.8 | \
+   suxgraph title="VS original X noisy" label1="Z[km]" legend=1 &
+suwind < RO_combine_z.su tmin=1.8 | \
+   suxgraph title="RHO original X noisy" label1="Z[km]" legend=1 &
+
+# Display
+#suwind < VP_z.su tmin=1.8 | \
+#   suxgraph title="original"&
+#  suxwigb legend=1 title="VP[m/s]" label1="Z[km]" &
+#style=normal 
+
+#suwind < VP_noisy_z.su tmin=1.8 | \
+#   suxgraph title="noisy"&
+#  suxwigb legend=1 title="VP[m/s]" label1="Z[km]" &
+
+
+
+
+

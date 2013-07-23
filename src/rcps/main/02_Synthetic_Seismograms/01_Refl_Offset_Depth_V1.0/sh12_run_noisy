@@ -1,0 +1,42 @@
+#! /bin/sh
+
+RCPSDATA=$RCPSROOT/data
+
+INPUTDIR=$RCPSDATA/00_Model_Building/1-D
+
+mkdir $RCPSDATA/02_Synthetic_Seismograms
+mkdir $RCPSDATA/02_Synthetic_Seismograms/1-D
+DATADIR=$RCPSDATA/02_Synthetic_Seismograms/1-D
+
+# Control parameters
+nx=1
+ny=1
+nz=15001
+dz=0.4
+noffset=25
+doffset=100.0
+offset0=100.0
+
+# Input data (logs or model in z)
+trc_VP=$INPUTDIR/VP_noisy_z.ad
+trc_VS=$INPUTDIR/VS_noisy_z.ad
+trc_RO=$INPUTDIR/RO_noisy_z.ad
+
+# Output data
+trc_ThetaPP=$DATADIR/ThetaPP_noisy_z.ad
+trc_ThetaPS=$DATADIR/ThetaPS_noisy_z.ad
+trc_Phi=$DATADIR/Phi_noisy_z.ad
+trc_TwtPP=$DATADIR/TwtPP_noisy_z.ad
+trc_TwtPS=$DATADIR/TwtPS_noisy_z.ad
+trc_RPP=$DATADIR/RPP_noisy_z.ad
+trc_RPS=$DATADIR/RPS_noisy_z.ad
+
+cd $DATADIR
+
+p_Roffset_z $nx $ny $nz $dz \
+            $noffset $doffset $offset0 \
+            $trc_VP $trc_VS $trc_RO \
+            $trc_ThetaPP $trc_ThetaPS $trc_Phi \
+            $trc_TwtPP $trc_TwtPS \
+            $trc_RPP $trc_RPS
+

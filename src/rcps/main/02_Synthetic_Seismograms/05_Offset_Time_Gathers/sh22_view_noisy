@@ -1,0 +1,26 @@
+#! /bin/sh
+
+DATADIR=$RCPSROOT/data/02_Synthetic_Seismograms/1-D
+
+suaddhead n1=3001 <$DATADIR/SynthPP_noisy_t.ad     | sushw key=dt a=2000 >temp1.su
+sumute <temp1.su key=tracl xmute=1,25 tmute=0.15,0.90 | \
+suxwigb legend=1 title='P-P noisy Seismogram [s]' &
+
+suaddhead n1=3001 <$DATADIR/SynthPS_noisy_t.ad     | sushw key=dt a=2000 >temp2.su
+sumute <temp2.su key=tracl xmute=1,25 tmute=0.15,0.90 | \
+suxwigb legend=1 title='P-S noisy Seismogram [s]' &
+
+suaddhead n1=3001 <$DATADIR/NmoPP_noisy_t.ad       | sushw key=dt a=2000 >temp3.su
+suximage cmap=hsv6 <temp3.su legend=1 title='NmoPP noisy [s]' &
+
+suaddhead n1=3001 <$DATADIR/NmoPS_noisy_t.ad       | sushw key=dt a=2000 >temp4.su
+suximage cmap=hsv6 <temp4.su legend=1 title='NmoPS noisy [s]' &
+
+suaddhead n1=3001 <$DATADIR/ThetaPP_noisy_t.ad     | sushw key=dt a=2000 >temp5.su
+suximage cmap=hsv6 <temp5.su legend=1 title='ThetaPP noisy [s]' &
+
+suaddhead n1=3001 <$DATADIR/ThetaPS_noisy_t.ad     | sushw key=dt a=2000 >temp6.su
+suximage cmap=hsv6 <temp6.su legend=1 title='ThetaPS noisy [s]' &
+
+rm temp*.su
+
