@@ -1,0 +1,23 @@
+#! /bin/sh
+
+RCPSDATA=./data
+
+mkdir $RCPSDATA/01_Reflectivity
+DATADIR=$RCPSDATA/01_Reflectivity
+
+cd $DATADIR
+
+na=40
+da=2.0
+a0=0
+Vp_upper=3130.0
+Vs_upper=1550.0
+Ro_upper=2.43
+Vp_lower=3050.0
+Vs_lower=1750.0
+Ro_lower=2.22
+fileRefl=Approx_RPP_RPS.asc
+
+p_forward $na $da $a0 $Vp_upper $Vs_upper $Ro_upper $Vp_lower $Vs_lower $Ro_lower $fileRefl
+
+

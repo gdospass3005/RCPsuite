@@ -1,0 +1,160 @@
+/* RPP, RPS calculations using approximations to the Zoeppritz equations
+   
+   RPP from Fatti's A&R approximation
+   RPS from A&R approximation
+
+   na: # of angles
+   da: angle spacing [degrees]
+   a0: first angle [degrees]
+   Vp_upper: Vp of the upper medium
+   Vs_upper: Vs of the upper medium
+   Ro_upper: density of the upper medium
+   Vp_lower: Vp of the lower medium
+   Vs_lower: Vs of the lower medium
+   Ro_lower: density of the lower medium
+   fileRefl: output file (theta phi RPP RPS columns)
+*/
+
+#include "rcps.h"
+
+/******************************************************************************/
+typedef struct INPUTPARMS
+{ /* Calculation Parameters */
+  int      na;
+  float    da;
+  float    a0;
+  char     fileRefl[255];
+} inputpar;
+/******************************************************************************/
+
+int main(int argc, char *argv[])
+{
+  inputpar  q;
+  layerpro  p;
+  interfpro r;
+  float     Rpp;
+  float     Rps;
+  float     theta; /* P-wave incidence angle */
+  float     phi;   /* S-wave reflection angle */
+  float     K_degrees_to_radian = PI / 180.0;
+  FILE     *trc_out;
+  float     a0, da;
+  int       ia;
+
+  float RP, RS, RD;
+  float LP_upper, LP_lower;
+  float LS_upper, LS_lower;
+  float LD_upper, LD_lower;
+  float VP, VS, Gamma;
+  float tantheta2, sintheta2;
+  float c1, c2, c3, c4, c5;
+
+  fprintf(stderr,
+     "p_forward - compare RPP, RPS approximations to the Zoeppritz equations\n");
+
+  if (argc == 1) exit(-1);
+
+  /* Input */
+  q.na         = atoi(argv[1]);
+  q.da         = atof(argv[2]);
+  q.a0         = atof(argv[3]);
+
+  p.Vp_upper   = atof(argv[4]);
+  p.Vs_upper   = atof(argv[5]);
+  p.Ro_upper   = atof(argv[6]);
+
+  p.Vp_lower   = atof(argv[7]);
+  p.Vs_lower   = atof(argv[8]);
+  p.Ro_lower   = atof(argv[9]);
+
+  strcpy( q.fileRefl, argv[10]);
+
+  fprintf(stderr,"Model RP from lnZP(VP,RO) \n");
+
+  /* RP from LP */
+  LP_upper = log( p.Vp_upper * p.Ro_upper );
+  LP_lower = log( p.Vp_lower * p.Ro_lower );
+
+  RP = 0.5*( LP_lower - LP_upper );
+  fprintf(stderr,"RP: %f\n",RP);
+
+  /* RS from LS */
+  LS_upper = log( p.Vs_upper * p.Ro_upper );
+  LS_lower = log( p.Vs_lower * p.Ro_lower );
+
+  RS = 0.5*( LS_lower - LS_upper );
+  fprintf(stderr,"RS: %f\n",RS);
+
+  /* RD from LD */
+  LD_upper = log( p.Ro_upper );
+  LD_lower = log( p.Ro_lower );
+
+  RD = 0.5*( LD_lower - LD_upper );
+  fprintf(stderr,"RD: %f\n",RD);
+
+  /* RPP,RPS from LP(VP,RO) LS(VS,RO) LD(RO) */
+  VP = 0.5 * (p.Vp_lower + p.Vp_upper);
+  VS = 0.5 * (p.Vs_lower + p.Vs_upper);
+  Gamma = VS/VP; /* from Russell et al 2005 */
+
+  a0 = q.a0 * K_degrees_to_radian;
+  da = q.da * K_degrees_to_radian;
+  trc_out = fopen(q.fileRefl, "w");
+
+
+  for (ia=0; ia<q.na; ++ia) {
+    theta = a0 + ia * da;
+
+    tantheta2 = tan(theta) * tan(theta);
+    sintheta2 = sin(theta) * sin(theta);
+
+    c1 = (1.0) + tantheta2;
+    c2 = (-8.0) * Gamma * tantheta2; 
+    c3 = (-0.5) * tantheta2 + (2.0) * Gamma * Gamma * sintheta2;
+    Rpp = c1 * RP + c2 * RS + c3 * RD;
+
+    phi = asin(Gamma * sin(theta));
+    c4 = (tan(theta) / Gamma) * ( ((4.0) * sintheta2) 
+                                  - ((4.0) * Gamma * cos(theta) * cos(phi))  );
+    c5 = (-tan(phi) / ((2.0) * Gamma)) * ( 1.0 + ((2.0) * sin(phi) * sin(phi)) 
+                                           - ((2.0) * Gamma * cos(theta) * cos(phi)) );
+
+    Rps = c4 * RS + c5 * RD;
+
+    /* Output */
+    fprintf(trc_out, "%.2f %.2f %.5f %.5f\n", 
+      theta/ K_degrees_to_radian, phi/ K_degrees_to_radian, Rpp, Rps);
+  }
+
+  fprintf(stderr,"Successful end of program.\n");
+  return(0);
+}
+
+
+
+
+
+
+
+  /* Properties of interface from properties of layers */
+  //if ( f_layers_to_interface(p, &r) == 1 ) f_error(1);
+
+  /* Reflectivities calculations */
+  //trc_out = fopen(q.fileRefl, "w");
+
+  //a0 = q.a0 * K_degrees_to_radian;
+  //da = q.da * K_degrees_to_radian;
+
+  //for (ia=0; ia<q.na; ++ia) {
+  //  theta = a0 + ia * da;
+
+  //  Rpp = f_Rpp(r, theta);
+
+  //  Rps = f_Rps(r, theta, &phi);
+
+    /* Output */
+    //fprintf(trc_out, "%.2f %.2f %.5f %.5f\n", 
+    //  theta/ K_degrees_to_radian, phi/ K_degrees_to_radian, Rpp, Rps);
+  //}
+
+

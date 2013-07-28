@@ -1,0 +1,145 @@
+/* RPP, RPS calculations using approximations to the Zoeppritz equations
+   
+   RPP from Fatti's A&R approximation
+   RPS from A&R approximation
+
+   na: # of angles
+   da: angle spacing [degrees]
+   a0: first angle [degrees]
+   Vp_upper: Vp of the upper medium
+   Vs_upper: Vs of the upper medium
+   Ro_upper: density of the upper medium
+   Vp_lower: Vp of the lower medium
+   Vs_lower: Vs of the lower medium
+   Ro_lower: density of the lower medium
+   fileRefl: output file (theta phi RPP RPS columns)
+*/
+
+#include "rcps.h"
+
+/******************************************************************************/
+typedef struct INPUTPARMS
+{ /* Calculation Parameters */
+  int      na;
+  float    da;
+  float    a0;
+  char     fileRefl[255];
+} inputpar;
+/******************************************************************************/
+
+int main(int argc, char *argv[])
+{
+  inputpar  q;
+  layerpro  p;
+  interfpro r;
+  float     Rpp;
+  float     Rps;
+  float     theta; /* P-wave incidence angle */
+  float     phi;   /* S-wave reflection angle */
+  float     K_degrees_to_radian = PI / 180.0;
+  FILE     *trc_out;
+  float     a0, da;
+  int       ia;
+
+  float VP, dVP_VP;
+  float lnVP_upper, lnVP_lower, d_lnVP;
+  float lnVS_upper, lnVS_lower, d_lnVS;
+  float lnD_upper,  lnD_lower,  d_lnD;
+  float RP, RS, RD;
+
+
+  float LP_upper, LP_lower;
+  float LS_upper, LS_lower;
+  float LD_upper, LD_lower;
+
+  float RP1, RP2;
+
+  fprintf(stderr,
+     "p_forward - compare RPP, RPS approximations to the Zoeppritz equations\n");
+
+  if (argc == 1) exit(-1);
+
+  /* Input */
+  q.na         = atoi(argv[1]);
+  q.da         = atof(argv[2]);
+  q.a0         = atof(argv[3]);
+
+  p.Vp_upper   = atof(argv[4]);
+  p.Vs_upper   = atof(argv[5]);
+  p.Ro_upper   = atof(argv[6]);
+
+  p.Vp_lower   = atof(argv[7]);
+  p.Vs_lower   = atof(argv[8]);
+  p.Ro_lower   = atof(argv[9]);
+
+  strcpy( q.fileRefl, argv[10]);
+
+  VP     = 0.5*(p.Vp_lower + p.Vp_upper);
+  dVP_VP = (p.Vp_lower - p.Vp_upper)/VP;
+
+  lnVP_upper = log(p.Vp_upper);
+  lnVP_lower = log(p.Vp_lower);
+
+  d_lnVP = lnVP_lower - lnVP_upper;
+
+  fprintf(stderr,"Vp_upper, Vp_lower: %f,  %f\n",p.Vp_upper, p.Vp_lower);
+  fprintf(stderr,"VP, dVP_VP: %f,  %f\n",VP, dVP_VP);
+  fprintf(stderr,"lnVP_upper, lnVP_lower: %f,  %f\n",lnVP_upper, lnVP_lower);
+  fprintf(stderr,"\n");
+  fprintf(stderr,": dVP_VP, d_lnVP: %f,  %f\n",dVP_VP, d_lnVP);
+
+  fprintf(stderr,"----------------------------------------\n");
+  fprintf(stderr,"Model RP from lnVP, lnRO and lnZP(VP,RO) \n");
+  /* RP from lnVP, lnRO */
+
+  d_lnVP = lnVP_lower - lnVP_upper;
+
+  lnD_upper = log(p.Ro_upper);
+  lnD_lower = log(p.Ro_lower);
+  d_lnD  = lnD_lower - lnD_upper;
+  RP1 = 0.5*(d_lnVP + d_lnD);
+
+  fprintf(stderr,": d_lnVP, d_lnD: %f,  %f\n", d_lnVP, d_lnD);
+  fprintf(stderr,"RP1: %f\n",RP1);
+
+  /* RP from lnZP */
+  LP_upper = log( p.Vp_upper * p.Ro_upper );
+  LP_lower = log( p.Vp_lower * p.Ro_lower );
+
+  RP2 = 0.5*( LP_lower - LP_upper );
+  fprintf(stderr,"RP2: %f\n",RP2);
+
+
+  fprintf(stderr,"Model RPP,RPS from lnZP(VP,RO) lnZS(VS,RO) lnRO(RO).\n");
+  fprintf(stderr,"Successful end of program.\n");
+  return(0);
+}
+
+
+
+
+
+
+
+  /* Properties of interface from properties of layers */
+  //if ( f_layers_to_interface(p, &r) == 1 ) f_error(1);
+
+  /* Reflectivities calculations */
+  //trc_out = fopen(q.fileRefl, "w");
+
+  //a0 = q.a0 * K_degrees_to_radian;
+  //da = q.da * K_degrees_to_radian;
+
+  //for (ia=0; ia<q.na; ++ia) {
+  //  theta = a0 + ia * da;
+
+  //  Rpp = f_Rpp(r, theta);
+
+  //  Rps = f_Rps(r, theta, &phi);
+
+    /* Output */
+    //fprintf(trc_out, "%.2f %.2f %.5f %.5f\n", 
+    //  theta/ K_degrees_to_radian, phi/ K_degrees_to_radian, Rpp, Rps);
+  //}
+
+
