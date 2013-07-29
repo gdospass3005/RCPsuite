@@ -15,7 +15,7 @@ input.read(Zoepp_data)
 
 # Approximation data
 Approx_data = numpy.zeros((40,4))
-Approx_data = numpy.genfromtxt('/home/gino/RCPsuite/data/01_Reflectivity/Approx_RPP_RPS_g1.asc')
+Approx_data = numpy.genfromtxt('/home/gino/RCPsuite/data/01_Reflectivity/Approx_RPP_RPS_g4.asc')
 
 # Graph settings
 x   =  numpy.arange(0.,80.,2.)

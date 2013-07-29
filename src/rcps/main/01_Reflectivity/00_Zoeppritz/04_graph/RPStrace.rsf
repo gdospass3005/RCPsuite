@@ -1,0 +1,10 @@
+1.5-svn	sfzoeppritz	01_Reflectivity/00_Zoeppritz/04_graph:	gino@wl-dhcp193-91.Mines.EDU	Mon Jul 29 13:44:37 2013
+
+	o1=0
+	label1="Incident Angle"
+	data_format="native_float"
+	esize=4
+	in="/var/tmp/01_Reflectivity/00_Zoeppritz/04_graph/RPStrace.rsf@"
+	unit1="\^o\_"
+	d1=2
+	n1=40

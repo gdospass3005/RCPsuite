@@ -13,12 +13,13 @@ da=2.0
 a0=0
 Vp_upper=3500.0
 Vs_upper=1750.0
-Ro_upper=2.45
+Ro_upper=2450.0
 Vp_lower=5000.0
 Vs_lower=2650.0
-Ro_lower=2.45
-fileRefl=Approx_RPP_RPS_g1.asc
+Ro_lower=2450.0
+fileRefl=Approx_RPP_RPS_g4.asc
 
-p_RPP_RPS $option $na $da $a0 $Vp_upper $Vs_upper $Ro_upper $Vp_lower $Vs_lower $Ro_lower $fileRefl
+#p_RPP_RPS $na $da $a0 $Vp_upper $Vs_upper $Ro_upper $Vp_lower $Vs_lower $Ro_lower $fileRefl
 
+p_forward $na $da $a0 $Vp_upper $Vs_upper $Ro_upper $Vp_lower $Vs_lower $Ro_lower $fileRefl
 

@@ -7,16 +7,16 @@ Flow('RPPtrace','',
   '''
   zoeppritz 
   na=40 da=2.0 a0=0 \
-  vp1=3500 vs1=1750 rho1=2.45 \
-  vp2=5000 vs2=2650 rho2=2.45
+  vp1=2150 vs1=860 rho1=2200 \
+  vp2=1750 vs2=1250 rho2=1950
   ''')
 
 Flow('RPStrace','',
   '''
   zoeppritz outp=n
   na=40 da=2.0 a0=0 \
-  vp1=3500 vs1=1750 rho1=2.45 \
-  vp2=5000 vs2=2650 rho2=2.45
+  vp1=2150 vs1=860 rho1=2200 \
+  vp2=1750 vs2=1250 rho2=1950
   ''')
 
 Result('RPPtrace','graph title=Rpp')
